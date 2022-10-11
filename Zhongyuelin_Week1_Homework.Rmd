@@ -1,0 +1,210 @@
+---
+title: "Zhongyuelin_Week1_Homework"
+author: "Zhongyuelin"
+date: "2022-10-08"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+**Part 2** 
+
+**2.1** Create variables, x, a, and b:
+
+```{r}
+x=12
+a=2
+b=4
+```
+
+Based on this, give R assignment statements that set the variable z to:
+
+**2.1.1**
+
+```{r}
+z=x**(a**b)
+z
+```
+
+**2.1.2**
+
+```{r}
+z=(x**a)**b
+z
+```
+
+**2.1.3**
+
+```{r}
+z=3*(x**3)+2*(x**2)+6*x+1
+z
+```
+
+**2.1.4**
+
+```{r}
+z=z+1
+z
+```
+
+**2.2** Give R expressions that return the following vectors
+
+**2.2.1**
+
+```{r}
+X=c(1:8,7:1)
+X
+```
+
+**2.2.2**
+
+```{r}
+Y=rep(1:5,times=c(1,2,3,4,5))
+Y
+```
+
+**2.3** Find the number from 1 to 100 that is not divisible by 2、3 or 7
+
+```{r}
+a=c()
+H=c(1:100)
+for (i in H){
+  if(i%%2!=0 &i%%3!=0 &i%%7!=0){
+    a=c(a,i)
+    
+    
+    
+  }
+}
+print(a)
+```
+
+**2.4** Suppose that queue \<- c("Steve", "Russell", "Alison", "Liam") and that queue represents a super- market queue with Steve first in line. Using R expressions update the supermarket queue as successively:
+
+```{r}
+queue = c("Steve", "Russell", "Alison", "Liam") 
+```
+
+**2.4.1** Barry arrives;
+
+```{r}
+queue=append(queue,"Barry")
+queue
+```
+
+**2.4.2** Steve is served;
+
+```{r}
+queue=queue[-1]
+queue
+```
+
+**2.4.3** Pam talks her way to the front with one item;
+
+```{r}
+queue=append(queue,"Pam", after=0)
+queue
+```
+
+**2.4.4** Barry gets impatient and leaves;
+
+```{r}
+queue=queue[-which(queue=="Barry")]
+queue
+```
+
+**2.4.5** Alison gets impatient and leaves.
+
+```{r}
+queue=queue[-which(queue=="Alison")]
+queue
+```
+
+**2.4.6** Using the function which(x), find the position of Russell in the queue.
+
+```{r}
+a=which(queue=="Russell")
+a
+```
+
+**Part 3**
+
+```{r}
+# Install & Library R package carData.
+install.packages("carData",repos = "http://cran.us.r-project.org")
+library(carData)
+
+```
+
+3.1
+
+```{r}
+#How many rows and how many columns does Salaries have? 397 rows 6 columns
+dim(Salaries)
+```
+
+3.2
+
+```{r}
+
+#install "dplyr' packages
+install.packages("dplyr",repos = "http://cran.us.r-project.org")
+library('dplyr')
+```
+
+```{r}
+#3.2 How many columns are numerical, how many columns contain factors? 3 factors columns 3 int columns
+group_by(Salaries)
+```
+
+3.3
+
+```{r}
+#3.3  Create a new data.frame, salaries_a, that only contains the data from discipline = "A". How many rows does this data.frame have? Check the documentation, what does discipline = "A" stand for? 181 rows
+salaries_a=data.frame(filter(Salaries,discipline=="A"))
+nrow(salaries_a)
+```
+
+3.4
+
+```{r}
+#Create a new data.frame, salaries_f, that only contains the data from the Female professor at a  ROWS rank of AssocProf. How many of those are in discipline A, how many in discipline B? A:4 B:6
+salaries_f= data.frame(filter(Salaries,sex=="Female" & rank=="AssocProf"))
+sum(salaries_f$discipline=="A")
+sum(salaries_f$discipline=="B")
+```
+
+3.5
+
+```{r}
+#What is the percentage of professors that started this year (yrs.service == 0)?
+salaries_prof=data.frame(filter(Salaries,rank=="Prof"))
+salaries_prof_0year=data.frame(filter(salaries_prof,yrs.service==0))
+nrow(salaries_prof_0year)/nrow(salaries_prof)
+```
+
+3.6
+
+```{r}
+#How many professors in discipline A have been professor for more than 10 years (i.e., yrs.service larger than 10)? 119 people
+salaries_10y_A=data.frame(filter(salaries_a,yrs.service>10))
+nrow(salaries_10y_A)
+```
+
+3.7
+
+```{r}
+#3.7 Add a new column called luck to Salaries and fill it with random samples from the integers 1 to 6.
+Salaries[ , 'luck'] = (sample(1:6,397,replace = T))
+head(Salaries)
+```
+
+3.8
+
+```{r}
+#3.8 How many of the Associate Professors (i.e., rank of AssocProf) got lucky (i.e., have a 6 in column luck)? What percentage of the Associate Professors got lucky? 
+salaries_asst=data.frame(filter(Salaries,rank=="AsstProf"))
+salaries_luck_asst=data.frame(filter(salaries_asst,luck==6))
+nrow(salaries_luck_asst)/nrow(salaries_asst)
+
+```
