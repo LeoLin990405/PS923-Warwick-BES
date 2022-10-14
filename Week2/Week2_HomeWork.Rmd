@@ -1,0 +1,253 @@
+---
+title: "Week2_Homework"
+author: '2162398'
+date: "2022-10-12"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Part 2
+
+```{r, echo=FALSE}
+#library package
+library(tidyverse)
+```
+
+2.1Load in well-being-wide.csv using read_csv as wb1. Your code should assume that the file is in the current working directory
+
+```{r}
+#1. Load in well-being-wide.csv #wd:"/Users/leo/Documents/GitHub/PS923-Warwick-BES"
+wb1=read_csv("well-being-wide.csv")
+```
+
+1.2 Create a new tidy version of wb1 called wb2 (i.e., from wide into long format). Specifically, collate columns t1 to t5, call the name column time and the value column well_being. I recommend usingthe tidy data (i.e., wb2) for the following tasks.
+
+```{r}
+#wb1-wb2 Convert w1 to tidy version
+wb2=wb1%>%
+  pivot_longer(!sub & !dep,
+  names_to = "time",values_to = "well_being")%>%
+  arrange(time,sub,dep,well_being) 
+  str(wb2)
+  #wb2_test Compare the created wb2 data frames to meet the homework requirements
+wb2_test=read.csv("well-being-long.csv")
+str(wb2_test)
+```
+
+1.3 What is the mean well-being at each time point?
+
+```{r}
+mean_by_timepoint=wb2%>%
+  group_by(time)%>%
+  summarise(mean=mean(well_being))
+ mean_by_timepoint
+```
+
+1.4 What is the mean well-being at each time point, separated by dep?
+
+```{r}
+mean_by_dep=wb2%>%
+  group_by(dep,time)%>%
+  summarise(mean=mean(well_being))
+mean_by_dep
+```
+
+1.5 Create a new tidy data.frame (or tibble), called wb_pre, that only contains the data from time points t1 and t2.
+
+```{r}
+wb_pre=wb2%>%
+  mutate(time=factor(time,c("t1","t2")),
+         sub=factor(sub),
+         dep=factor(dep))%>%
+         filter(!is.na(time))
+wb_pre
+```
+
+1.6 Add a new column well_being_z to wb2 that contains the by-department standarised (also called z-standardised) well-being values [standardised = (value - mean(value)) / sd(value)) ].
+
+```{r}
+wb2=wb2%>%
+  group_by(dep)%>%
+  mutate(well_being_z=(well_being-mean(well_being))/sd(well_being))
+wb2
+```
+
+1.7 Add a new column pre_post to wb2 that has the value "pre" for time t1 and t2 and post otherwise (i.e., for time t3 to t5). Thus, this column contains the information of whether the data is from before or after the intervention
+
+```{r}
+wb2=wb2%>%
+  mutate(pre_post=
+  case_when(time=="t1"~"pre",
+   time=="t2"~"pre",
+  time!="t1"~"post"))
+wb2
+```
+
+1.8 Create a new tibble with the name av_wb, that has the average well-being as well as the average standardised well-being before the intervention (i.e., average of t1 and t2) and after the intervention (i.e., average of t3 to t5) per participant. This tibble should also contain the dep variable.
+
+```{r}
+ab_wb=wb2%>%
+  group_by(pre_post,sub,dep)%>%
+  summarise(mean=mean(well_being),
+            mean_z=mean(well_being_z))
+         
+ 
+ab_wb
+```
+
+1.9 Calculate the difference between average pre and average post well-being value for each participant you created in task 8. Which participant has the largest and which has the smallest difference?
+
+```{r}
+#s6 has the lagrgest difference and s5 has the smallest difference
+diff_wb=ab_wb%>%
+  select(-mean_z)%>%
+  spread(pre_post,mean)%>%
+  mutate(diff=post-pre)
+  #Find the participant with the maximum value of the difference
+  max_diff_wb=diff_wb%>%
+   summarise(max=max(diff),)%>%
+   arrange(diff_wb,desc(max))%>%
+   select(sub,max)
+  #Find the participant with the minimum value of the difference
+  min_diff_wb=diff_wb%>%
+   summarise(min=min(diff))%>%
+   arrange(diff_wb,min)%>%
+   select(sub,min)
+  
+max_diff_wb
+min_diff_wb
+diff_wb
+
+```
+
+1.10 Calculate the difference between average pre and average post standardised well-being value for each participant created in task 8. Which participant has the largest and which has the smallest difference? Does the same participant have the largest or smallest unstandardised and standardised well-being scores? If not, what does it mean and how can it happen?
+
+```{r}
+#s6 has the lagrgest unstandardised and standardised well-being scores
+#
+
+z_diff_wb=ab_wb%>%
+  select(-mean)%>%
+  spread(pre_post,mean_z)%>%
+  mutate(diff=post-pre)
+
+z_max_diff_wb=z_diff_wb%>%
+  summarise(max=max(diff))%>%
+  arrange(z_diff_wb,max)%>%
+  select(sub,max)
+  
+z_min_diff_wb=z_diff_wb%>%
+  summarise(min=min(diff))%>%
+  arrange(z_diff_wb,desc(min))%>%
+  select(sub,min)
+z_diff_wb
+z_max_diff_wb
+z_min_diff_wb
+  
+
+ 
+```
+
+11. Calculate the average difference well-being score and also the average standardised difference score. Do you think the difference is larger than zero, when taking the variability in the data into account?
+
+```{r}
+av_wb=diff_wb%>%
+  summarise(av_diff=mean(diff))
+av_wb_z=z_diff_wb%>%
+  summarise(av_diff_z=mean(diff))
+av_wb
+av_wb_z
+
+```
+
+Part 2 
+
+2.1 Write a function h1 which uses a for-loop and the explicit formulation
+
+```{r}
+
+
+h1=function(x,n){
+  result=1
+ for (i in 1:n) {
+   result=result+x^i
+   
+ } 
+  return(result)
+}
+
+
+```
+
+2.2 Write a function h2 which uses a while-loop and the explicit formulation
+
+```{r}
+h2=function(x,n){
+  result=1
+  i=1
+  while (i<=n) {
+    result=result+x**i
+    i=i+1
+    
+  }
+  return(result)
+}
+
+```
+
+2.3Write a function h3 which uses no loop, but vectorised operations for the explicit formulation
+
+```{r}
+h3=function(x,n){
+  vector=c(0:n)
+  result=sum(x^vector)
+  return(result)
+}
+
+```
+
+2.4
+
+```{r}
+h4=function(x,n){
+  #when x=1
+  if(x==1){
+    n_tmp=c(0:n)
+    return(sum(x^n_tmp))
+    
+  }else{
+    return(1-x^(n+1)/(1-x))
+  }
+}
+```
+
+2.5 Check your functions h1, h2, h3, and h4 against the values given in the following table.
+
+```{r}
+#h1-testing
+h1(0.3,55)
+h1(6.6,8)
+h1(1,12)
+```
+
+```{r}
+#h2-testing
+h2(0.3,55)
+h2(6.6,8)
+h2(1,12)
+```
+
+```{r}
+#h3-testing
+h3(0.3,55)
+h3(6.6,8)
+h3(1,12)
+```
+
+```{r}
+#h4-testing
+h4(0.3,55)
+h4(6.6,8)
+h4(1,12)
+```
