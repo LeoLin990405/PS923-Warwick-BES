@@ -17,7 +17,8 @@ library(tidyverse)
 2.1Load in well-being-wide.csv using read_csv as wb1. Your code should assume that the file is in the current working directory
 
 ```{r}
-#1. Load in well-being-wide.csv #wd:"/Users/leo/Documents/GitHub/PS923-Warwick-BES"
+#1. Load in well-being-wide.csv #wd:"/Users/leo/Desktop/PS923/Week2"
+getwd()
 wb1=read_csv("well-being-wide.csv")
 ```
 
@@ -30,7 +31,7 @@ wb2=wb1%>%
   names_to = "time",values_to = "well_being")%>%
   arrange(time,sub,dep,well_being) 
   str(wb2)
-  #wb2_test Compare the created wb2 data frames to meet the homework requirements
+#wb2_test Compare the created wb2 data frames to meet the homework requirements
 wb2_test=read.csv("well-being-long.csv")
 str(wb2_test)
 ```
